@@ -20,6 +20,13 @@ app.use(helmet());
 app.use(morgan('common'));
 
 // Socket.io Setup
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:4200",
+    methods: ["GET", "POST"]
+  }
+});
+
 io.on('connection', (socket) => {
   console.log('IoT Device Connected:', socket.id);
   
