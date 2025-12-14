@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { io } from 'socket.io-client';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,7 @@ import { ChartConfiguration, ChartOptions } from 'chart.js';
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
+  private http = inject(HttpClient);
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   socket: any;
@@ -42,7 +44,9 @@ export class AppComponent implements OnInit {
   };
 
   ngOnInit() {
-    this.socket = io('http://localhost:5000');
+    this.fetchHistory();
+
+    this.socket = io(`http://localhost:5000`);
 
     this.socket.on('connect', () => {
       this.status = 'Live Connection';
@@ -61,13 +65,32 @@ export class AppComponent implements OnInit {
     this.lineChartData.labels?.push(timeLabel);
     this.lineChartData.datasets[0].data.push(data.usage);
 
-    // Keep only the last 20 readings (Moving Window)
+    // Keep only the last 20 readings
     if (this.lineChartData.labels && this.lineChartData.labels.length > 20) {
       this.lineChartData.labels.shift();
       this.lineChartData.datasets[0].data.shift();
     }
 
-    // Tell Angular to redraw
     this.chart?.update();
+  }
+
+  fetchHistory() {
+    this.http.get<any[]>(`http://localhost:5000/api/history`).subscribe({
+      next: (data) => {
+        // Clear existing default data if any
+        this.lineChartData.labels = [];
+        this.lineChartData.datasets[0].data = [];
+
+        // Loop through history and add to chart
+        data.forEach(reading => {
+          const timeLabel = new Date(reading.timestamp).toLocaleTimeString();
+          this.lineChartData.labels?.push(timeLabel);
+          this.lineChartData.datasets[0].data.push(reading.usage);
+        });
+
+        this.chart?.update();
+      },
+      error: (err) => console.error('Failed to load history', err)
+    });
   }
 }

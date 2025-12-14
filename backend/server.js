@@ -60,8 +60,21 @@ mongoose.connect(mongoURI)
   .then(() => console.log('✅ MongoDB Atlas Connected Successfully!'))
   .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
-// Basic Route
-app.get('/', (req, res) => res.send('Smart City API is Running'));
+
+// API Endpoint to get historical data
+app.get('/api/history', async (req, res) => {
+  try {
+    // last 50 readings, sorted by newest first
+    const history = await EnergyReading.find()
+      .sort({ timestamp: -1 })
+      .limit(50);
+    
+    // Reversing it so the chart shows Oldest -> Newest (Left to Right)
+    res.json(history.reverse());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 const PORT = process.env.PORT;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
