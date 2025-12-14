@@ -10,6 +10,8 @@ const morgan = require('morgan');
 const app = express();
 const server = http.createServer(app);
 
+const EnergyReading = require('./models/EnergyReading');
+
 // Middleware
 app.use(express.json());
 // Allow Angular
@@ -18,26 +20,31 @@ app.use(helmet());
 app.use(morgan('common'));
 
 // Socket.io Setup
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:4200",
-    methods: ["GET", "POST"]
-  }
-});
-
 io.on('connection', (socket) => {
   console.log('IoT Device Connected:', socket.id);
   
-  // Sending energy data every 2 seconds
-  setInterval(() => {
+  const interval = setInterval(async () => {
     const fakeData = {
       sensorId: "Sensor-001",
-      // Random val between 10-110
-      usage: Math.floor(Math.random() * 100) + 10, 
+      usage: Math.floor(Math.random() * 100) + 10,
       timestamp: new Date()
     };
+
+    // 1. Save to Database
+    try {
+      await EnergyReading.create(fakeData);
+    } catch (err) {
+      console.error("DB Save Error:", err);
+    }
+
+    // 2. Send to Frontend
     socket.emit('energy-update', fakeData);
   }, 2000);
+
+  socket.on('disconnect', () => {
+    clearInterval(interval);
+    console.log('User disconnected');
+  });
 });
 
 // Database Connection
@@ -49,5 +56,5 @@ mongoose.connect(mongoURI)
 // Basic Route
 app.get('/', (req, res) => res.send('Smart City API is Running'));
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
