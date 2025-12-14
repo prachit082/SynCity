@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { HttpClient } from '@angular/common/http';
+import { Alert } from '../interfaces/alert.model';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,9 @@ import { HttpClient } from '@angular/common/http';
 })
 export class AppComponent implements OnInit {
   private http = inject(HttpClient);
+  alerts : Alert[] = [];
+  //Flashing State
+  isCritical = false;
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   socket: any;
@@ -45,6 +49,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.fetchHistory();
+    this.fetchRecentAlerts();
 
     this.socket = io(`http://localhost:5000`);
 
@@ -55,6 +60,12 @@ export class AppComponent implements OnInit {
     this.socket.on('energy-update', (data: any) => {
       this.currentUsage = data.usage;
       this.updateChart(data);
+    });
+
+    this.socket.on('alert-incident', (alert: any) => {
+      this.triggerVisualAlarm();
+      this.alerts.unshift(alert); 
+      if (this.alerts.length > 5) this.alerts.pop();
     });
   }
 
@@ -92,5 +103,17 @@ export class AppComponent implements OnInit {
       },
       error: (err) => console.error('Failed to load history', err)
     });
+  }
+
+  fetchRecentAlerts() {
+    this.http.get<any[]>('http://localhost:5000/api/alerts').subscribe(data => {
+      this.alerts = data.slice(0, 5);
+    });
+  }
+
+  triggerVisualAlarm() {
+    this.isCritical = true;
+    // Turn off red flash after 3 seconds
+    setTimeout(() => this.isCritical = false, 3000);
   }
 }
