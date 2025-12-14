@@ -41,9 +41,10 @@ io.on('connection', (socket) => {
 });
 
 // Database Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/smartcity')
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.error(err));
+const mongoURI = process.env.MONGODB_URI;
+mongoose.connect(mongoURI)
+  .then(() => console.log('✅ MongoDB Atlas Connected Successfully!'))
+  .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 // Basic Route
 app.get('/', (req, res) => res.send('Smart City API is Running'));
