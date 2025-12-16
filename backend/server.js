@@ -10,7 +10,11 @@ const morgan = require('morgan');
 const app = express();
 const server = http.createServer(app);
 
-let isSystemActive = true;
+let systemState = {
+  isActive: true,
+  // Default is 100kW
+  alertThreshold: 100 
+};
 
 // Model Imports
 const EnergyReading = require('./models/EnergyReading');
@@ -34,26 +38,25 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   console.log('IoT Device Connected:', socket.id);
 
-  // 1. Send current status immediately on connection
-  socket.emit('system-status', isSystemActive);
+  /// 1. Sending FULL State on connection
+  socket.emit('system-state', systemState);
 
-  // 2. Listen for COMMANDS from Frontend
+  // 2. Handle Master Switch
   socket.on('toggle-system', (command) => {
-    if (command === 'STOP') {
-      isSystemActive = false;
-      console.log('❌ System Emergency Stop Triggered by', socket.id);
-    } else {
-      isSystemActive = true;
-      console.log('✅ System Resumed by', socket.id);
-    }
-    
-    // Broadcasting new status to ALL connected dashboards
-    io.emit('system-status', isSystemActive);
+    systemState.isActive = (command === 'START');
+    io.emit('system-state', systemState); // Broadcast to everyone
+  });
+
+  // 3. NEW: Handle Threshold Change
+  socket.on('update-threshold', (newLimit) => {
+    systemState.alertThreshold = parseInt(newLimit);
+    console.log(`Admin updated threshold to: ${systemState.alertThreshold}kW`);
+    io.emit('system-state', systemState);
   });
   
   const interval = setInterval(async () => {
     // 3. ONLY Generating data if system is ACTIVE
-    if (!isSystemActive) return;
+    if (!systemState.isActive) return;
     const usageValue = Math.floor(Math.random() * 120) + 10;
     const fakeData = {
       sensorId: "Sensor-001",
@@ -65,11 +68,11 @@ io.on('connection', (socket) => {
     await EnergyReading.create(fakeData);
 
     // Checking For THRESHOLD
-    if (usageValue > 100) {
+    if (usageValue > systemState.alertThreshold) {
       const alertData = {
         sensorId: "Sensor-001",
         value: usageValue,
-        threshold: 100,
+        threshold: systemState.alertThreshold,
         message: `CRITICAL LOAD: ${usageValue}kW detected!`
       };
 

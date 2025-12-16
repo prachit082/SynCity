@@ -5,11 +5,12 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { HttpClient } from '@angular/common/http';
 import { Alert } from '../interfaces/alert.model';
+import { AdminPanelComponent } from './components/admin-panel/admin-panel.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, BaseChartDirective],
+  imports: [CommonModule, BaseChartDirective, AdminPanelComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -20,6 +21,8 @@ export class AppComponent implements OnInit {
   isCritical = false;
   //System State
   isSystemActive = true;
+  //Admin Mode
+  isAdminMode = false;
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   socket: any;

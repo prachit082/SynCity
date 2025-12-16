@@ -11,10 +11,23 @@
     }
 
     <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-      <div>
+      <div class="flex gap-4 items-center">
+      <div> 
         <h1 class="text-2xl font-bold text-slate-800">SynCity Energy Grid</h1>
         <p class="text-slate-500 text-sm">Real-time Sensor Feed</p>
       </div>
+      <button 
+    (click)="isAdminMode = !isAdminMode"
+    class="text-xs font-bold px-3 py-1 rounded-full border transition-colors"
+    [class.bg-slate-800]="isAdminMode"
+    [class.text-white]="isAdminMode"
+    [class.bg-white]="!isAdminMode"
+    [class.text-slate-800]="!isAdminMode">
+    {{ isAdminMode ? 'EXIT ADMIN' : 'ADMIN LOGIN' }}
+  </button>
+      </div>
+
+
       <div class="text-right">
          <div [class.text-red-600]="currentUsage > 100" class="text-3xl font-mono font-bold text-blue-600 transition-colors">
            {{ currentUsage }} <span class="text-sm text-slate-400">kW</span>
@@ -96,3 +109,28 @@
     &copy; 2025 SynCity Energy Solutions. All rights reserved.
   </div>
 </footer>
+
+@if(isAdminMode){
+<div
+  class="h-screen w-screen fixed inset-0 grid place-items-center bg-zinc-800/50 z-20 overflow-hidden"
+>
+  <div class="bg-slate-50 relative p-6 pb-2 rounded-md min-w-120 h-fit">
+    <svg
+        (click)="isAdminMode = !isAdminMode"
+        type="button"
+        class="absolute top-4 right-5 h-5 w-5 cursor-pointer text-black"
+        clip-rule="evenodd"
+        fill-rule="evenodd"
+        stroke-linejoin="round"
+        stroke-miterlimit="2"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="m12 10.93 5.719-5.72c.146-.146.339-.219.531-.219.404 0 .75.324.75.749 0 .193-.073.385-.219.532l-5.72 5.719 5.719 5.719c.147.147.22.339.22.531 0 .427-.349.75-.75.75-.192 0-.385-.073-.531-.219l-5.719-5.719-5.719 5.719c-.146.146-.339.219-.531.219-.401 0-.75-.323-.75-.75 0-.192.073-.384.22-.531l5.719-5.719-5.72-5.719c-.146-.147-.219-.339-.219-.532 0-.425.346-.749.75-.749.192 0 .385.073.531.219z"
+        />
+      </svg>
+    <app-admin-panel></app-admin-panel>
+  </div>
+</div>
+}

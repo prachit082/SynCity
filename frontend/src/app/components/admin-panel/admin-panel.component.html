@@ -1,0 +1,42 @@
+<div class="p-2">
+      <h2 class="text-xl font-bold mb-4 border-b border-slate-600 pb-2 flex items-center gap-2">
+        🛡️ Administrator Controls
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <div>
+          <h3 class="font-semibold mb-2">System Override</h3>
+          <button 
+            (click)="toggleSystem()"
+            [class.bg-red-500]="systemState.isActive"
+            [class.bg-green-600]="!systemState.isActive"
+            class="w-full py-3 rounded-lg font-bold shadow hover:opacity-90 transition-all">
+            {{ systemState.isActive ? '⛔ EMERGENCY STOP' : '✅ RESUME OPERATIONS' }}
+          </button>
+          <p class="text-xs mt-2">
+            Status: {{ systemState.isActive ? 'System is LIVE' : 'System is HALTED' }}
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-semibold mb-2">Safety Threshold Configuration</h3>
+          <div class="flex gap-2">
+            <input 
+              type="number" 
+              [(ngModel)]="newThreshold"
+              class="w-full px-3 py-2 rounded text-slate-900 font-mono"
+              placeholder="e.g. 100">
+            <button 
+              (click)="updateThreshold()"
+              class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded font-semibold">
+              SET
+            </button>
+          </div>
+          <p class="text-xs mt-2">
+            Current Alert Trigger: <span class="text-red-400 font-mono">{{ systemState.alertThreshold }} kW</span>
+          </p>
+        </div>
+
+      </div>
+    </div>
