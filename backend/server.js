@@ -10,6 +10,8 @@ const morgan = require('morgan');
 const app = express();
 const server = http.createServer(app);
 
+let isSystemActive = true;
+
 // Model Imports
 const EnergyReading = require('./models/EnergyReading');
 const Alert = require('./models/Alert');
@@ -31,20 +33,38 @@ const io = new Server(server, {
 
 io.on('connection', (socket) => {
   console.log('IoT Device Connected:', socket.id);
+
+  // 1. Send current status immediately on connection
+  socket.emit('system-status', isSystemActive);
+
+  // 2. Listen for COMMANDS from Frontend
+  socket.on('toggle-system', (command) => {
+    if (command === 'STOP') {
+      isSystemActive = false;
+      console.log('❌ System Emergency Stop Triggered by', socket.id);
+    } else {
+      isSystemActive = true;
+      console.log('✅ System Resumed by', socket.id);
+    }
+    
+    // Broadcasting new status to ALL connected dashboards
+    io.emit('system-status', isSystemActive);
+  });
   
   const interval = setInterval(async () => {
-    // 1. Generating Data
-    const usageValue = Math.floor(Math.random() * 120) + 10; // Increased max to 130 to trigger alerts easier
+    // 3. ONLY Generating data if system is ACTIVE
+    if (!isSystemActive) return;
+    const usageValue = Math.floor(Math.random() * 120) + 10;
     const fakeData = {
       sensorId: "Sensor-001",
       usage: usageValue,
       timestamp: new Date()
     };
 
-    // 2. Saving Raw Data
+    // Saving Raw Data
     await EnergyReading.create(fakeData);
 
-    // 3. Checking For THRESHOLD
+    // Checking For THRESHOLD
     if (usageValue > 100) {
       const alertData = {
         sensorId: "Sensor-001",

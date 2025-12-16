@@ -18,6 +18,8 @@ export class AppComponent implements OnInit {
   alerts : Alert[] = [];
   //Flashing State
   isCritical = false;
+  //System State
+  isSystemActive = true;
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   socket: any;
@@ -67,6 +69,11 @@ export class AppComponent implements OnInit {
       this.alerts.unshift(alert); 
       if (this.alerts.length > 5) this.alerts.pop();
     });
+
+    this.socket.on('system-status', (isActive: boolean) => {
+      this.isSystemActive = isActive;
+      this.status = isActive ? 'Live Connection' : 'System Paused';
+    });
   }
 
   updateChart(data: any) {
@@ -107,7 +114,7 @@ export class AppComponent implements OnInit {
 
   fetchRecentAlerts() {
     this.http.get<any[]>('http://localhost:5000/api/alerts').subscribe(data => {
-      this.alerts = data.slice(0, 5);
+      this.alerts = data.slice(0, 6);
     });
   }
 
@@ -115,5 +122,10 @@ export class AppComponent implements OnInit {
     this.isCritical = true;
     // Turn off red flash after 3 seconds
     setTimeout(() => this.isCritical = false, 3000);
+  }
+
+  toggleSystem() {
+    const command = this.isSystemActive ? 'STOP' : 'START';
+    this.socket.emit('toggle-system', command);
   }
 }

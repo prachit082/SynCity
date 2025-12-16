@@ -1,5 +1,5 @@
-<div [class.bg-red-50]="isCritical" class="min-h-screen transition-colors duration-500 bg-slate-50 p-8">
-  <div class="w-full h-full mx-auto space-y-6">
+<div [class.bg-red-50]="isCritical" class="min-h-screen transition-colors duration-500 bg-slate-50 p-6">
+  <div class="w-full h-full mx-auto space-y-4">
     
     @if (isCritical) {
       <div class="bg-red-600 text-white p-4 rounded-xl shadow-lg animate-pulse flex items-center justify-between">
@@ -10,9 +10,9 @@
       </div>
     }
 
-    <div class="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+    <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-200">
       <div>
-        <h1 class="text-2xl font-bold text-slate-800">Smart City Energy Grid</h1>
+        <h1 class="text-2xl font-bold text-slate-800">SynCity Energy Grid</h1>
         <p class="text-slate-500 text-sm">Real-time Sensor Feed</p>
       </div>
       <div class="text-right">
@@ -24,6 +24,35 @@
          </div>
       </div>
     </div>
+
+  <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+    <div>
+      <h3 class="font-bold text-slate-700">Grid Control</h3>
+      <p class="text-xs text-slate-500">Master Override</p>
+    </div>
+    
+    <div class="flex items-center gap-4">
+    <div class="flex gap-4 items-center">
+      <div [class.bg-green-500]="isSystemActive" [class.bg-slate-300]="!isSystemActive" 
+         class="w-4 h-4 rounded-full animate-pulse"></div>
+    <div>
+      <div class="font-bold text-slate-700">
+        {{ isSystemActive ? 'Operational' : 'Maintenance Mode' }}
+      </div>
+      <div class="text-xs text-slate-400">
+        {{ isSystemActive ? 'Receiving Sensor Data...' : 'Data Stream Halted' }}
+      </div>
+    </div>
+    </div>
+    <button 
+      (click)="toggleSystem()"
+      [class.bg-red-500]="isSystemActive"
+      [class.bg-green-600]="!isSystemActive"
+      class="px-6 py-2 rounded-lg text-white font-bold shadow transition-colors hover:opacity-90">
+      {{ isSystemActive ? 'STOP SYSTEM' : 'RESUME GRID' }}
+    </button>
+    </div>
+  </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
