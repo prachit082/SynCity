@@ -1,0 +1,98 @@
+<div class="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+  <div
+    class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md border-t-4 border-blue-600"
+  >
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-slate-800">SymCity Grid</h1>
+      <p class="text-slate-500">Authorized Access Only</p>
+    </div>
+
+    <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" novalidate>
+      <div class="mb-4">
+        <label
+          for="username"
+          class="block text-sm font-medium text-slate-700 mb-1"
+          >Username</label
+        >
+        <input
+          type="text"
+          name="username"
+          ngModel
+          required
+          minlength="3"
+          #userRef="ngModel"
+          class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+          [class.border-red-500]="userRef.invalid && userRef.touched"
+          placeholder="Enter ID"
+        />
+
+        @if (userRef.invalid && userRef.touched) {
+        <div class="text-red-500 text-xs mt-1">
+          @if (userRef.errors?.['required']) { Username is required. } @if
+          (userRef.errors?.['minlength']) { Must be at least 3 chars. }
+        </div>
+        }
+      </div>
+
+      <div class="mb-6">
+        <label
+          for="password"
+          class="block text-sm font-medium text-slate-700 mb-1"
+          >Password</label
+        >
+        <input
+          type="password"
+          name="password"
+          ngModel
+          required
+          #passRef="ngModel"
+          class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+          [class.border-red-500]="passRef.invalid && passRef.touched"
+          placeholder="Enter Password"
+        />
+
+        @if (passRef.invalid && passRef.touched) {
+        <div class="text-red-500 text-xs mt-1">Password is required.</div>
+        }
+      </div>
+
+      @if (errorMsg) {
+      <div
+        class="bg-red-50 text-red-600 p-3 rounded text-sm mb-4 text-center border border-red-200"
+      >
+        {{ errorMsg }}
+      </div>
+      }
+
+      <button
+        type="submit"
+        [disabled]="loginForm.invalid || isLoading"
+        [class.opacity-50]="loginForm.invalid || isLoading"
+        class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition flex justify-center items-center"
+      >
+        @if (isLoading) {
+        <svg class="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+          ></path>
+        </svg>
+        }
+        {{ isLoading ? "Verifying..." : "LOGIN" }}
+      </button>
+    </form>
+
+    <div class="mt-6 text-center text-xs text-slate-400 border-t pt-4">
+      System Version 1.0.0
+    </div>
+  </div>
+</div>
