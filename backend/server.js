@@ -92,7 +92,7 @@ io.on("connection", (socket) => {
 
     // 4. Sending Normal Data
     socket.emit("energy-update", fakeData);
-  }, 2000);
+  }, 10000);
 
   socket.on("disconnect", () => {
     clearInterval(interval);
@@ -181,6 +181,31 @@ app.get("/api/reports/export", async (req, res) => {
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: "Export failed" });
+  }
+});
+
+// API Endpoint to UPDATE ALERT STATUS (Staff Action)
+app.put("/api/alerts/:id/resolve", async (req, res) => {
+  const { id } = req.params;
+  const { status, note, user } = req.body;
+
+  try {
+    const updatedAlert = await Alert.findByIdAndUpdate(
+      id,
+      {
+        status: status,
+        resolutionNote: note,
+        resolvedBy: user,
+        resolvedAt: new Date(),
+      },
+      { new: true }
+    );
+
+    io.emit("alert-updated", updatedAlert);
+
+    res.json(updatedAlert);
+  } catch (err) {
+    res.status(500).json({ error: "Update failed" });
   }
 });
 

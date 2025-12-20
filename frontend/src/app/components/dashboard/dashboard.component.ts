@@ -73,6 +73,19 @@ export class DashboardComponent implements OnInit {
       if (this.alerts.length > 5) this.alerts.pop();
     });
 
+    this.socket.on('alert-updated', (updatedAlert: any) => {
+      const index = this.alerts.findIndex(
+        (a) =>
+          a.sensorId === updatedAlert.sensorId &&
+          a.timestamp === updatedAlert.timestamp
+      );
+      if (index !== -1) {
+        this.alerts[index] = updatedAlert;
+      } else {
+        this.alerts.unshift(updatedAlert);
+      }
+    });
+
     this.socket.on('system-status', (isActive: boolean) => {
       this.isSystemActive = isActive;
       this.status = isActive ? 'Live Connection' : 'System Paused';
@@ -127,7 +140,7 @@ export class DashboardComponent implements OnInit {
     this.http
       .get<any[]>('http://localhost:5000/api/alerts')
       .subscribe((data) => {
-        this.alerts = data.slice(0, 6);
+        this.alerts = data;
       });
   }
 
@@ -181,5 +194,22 @@ export class DashboardComponent implements OnInit {
 
     // Cleanup
     window.URL.revokeObjectURL(url);
+  }
+
+  resolveAlert(alertModel: any) {
+    const note = prompt('Enter Maintenance Note (e.g., "Reset Breaker"):');
+    if (!note) return;
+
+    const currentUser = this.auth.currentUser$.value?.username || 'Staff';
+
+    this.http
+      .put(`http://localhost:5000/api/alerts/${alertModel._id}/resolve`, {
+        status: 'Resolved',
+        note: note,
+        user: currentUser,
+      })
+      .subscribe({
+        error: () => alert('Failed to update status'),
+      });
   }
 }

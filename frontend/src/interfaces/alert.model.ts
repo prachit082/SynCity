@@ -1,5 +1,11 @@
 export interface Alert {
-  timestamp: string;
-  message: string;
+  sensorId: string;
   value: number;
+  threshold: number;
+  message: string;
+  timestamp: Date;
+  status: 'Open' | 'Investigating' | 'Resolved';
+  resolvedBy?: string | null;
+  resolutionNote?: string | null;
+  resolvedAt?: Date;
 }
