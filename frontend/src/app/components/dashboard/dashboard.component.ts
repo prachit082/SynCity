@@ -94,7 +94,7 @@ export class DashboardComponent implements OnInit {
     this.lineChartData.labels?.push(timeLabel);
     this.lineChartData.datasets[0].data.push(data.usage);
 
-    // Keep only the last 20 readings
+    // Keeping only the last 20 readings
     if (this.lineChartData.labels && this.lineChartData.labels.length > 20) {
       this.lineChartData.labels.shift();
       this.lineChartData.datasets[0].data.shift();
@@ -106,7 +106,7 @@ export class DashboardComponent implements OnInit {
   fetchHistory() {
     this.http.get<any[]>(`http://localhost:5000/api/history`).subscribe({
       next: (data) => {
-        // Clear existing default data if any
+        // Clearing existing default data if any
         this.lineChartData.labels = [];
         this.lineChartData.datasets[0].data = [];
 
@@ -140,5 +140,44 @@ export class DashboardComponent implements OnInit {
   toggleSystem() {
     const command = this.isSystemActive ? 'STOP' : 'START';
     this.socket.emit('toggle-system', command);
+  }
+
+  downloadReport() {
+    this.http.get<any[]>('http://localhost:5000/api/reports/export').subscribe({
+      next: (data) => {
+        this.generateCSV(data);
+      },
+      error: (err) => alert('Failed to download report'),
+    });
+  }
+
+  generateCSV(data: any[]) {
+    const headers = ['Sensor ID', 'Date', 'Time', 'Usage (kW)'];
+
+    const rows = data.map((record) => {
+      const dateObj = new Date(record.timestamp);
+      return [
+        record.sensorId,
+        dateObj.toLocaleDateString('en-GB').replace(/\//g, '-'),
+        dateObj.toLocaleTimeString(),
+        record.usage,
+      ].join(',');
+    });
+
+    // Combining Headers and Rows
+    const csvContent = [headers.join(','), ...rows].join('\n');
+
+    // Creating a Blob (Fake File)
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+
+    // Triggering Download via a hidden link
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Energy_Report_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+
+    // Cleanup
+    window.URL.revokeObjectURL(url);
   }
 }

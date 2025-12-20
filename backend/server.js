@@ -166,5 +166,19 @@ app.get("/api/alerts", async (req, res) => {
   res.json(alerts);
 });
 
+// API Endpoint to Get Past 500 Alerts for export
+app.get("/api/reports/export", async (req, res) => {
+  try {
+    const data = await EnergyReading.find()
+      .sort({ timestamp: -1 })
+      .limit(500)
+      .lean();
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Export failed" });
+  }
+});
+
 const PORT = process.env.PORT;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
