@@ -57,12 +57,16 @@ io.on("connection", (socket) => {
     io.emit("system-state", systemState);
   });
 
+  let sensorCounter = 1;
+
   const interval = setInterval(async () => {
     // 3. ONLY Generating data if system is ACTIVE
     if (!systemState.isActive) return;
     const usageValue = Math.floor(Math.random() * 120) + 10;
+    const sensorId = `Sensor-${String(sensorCounter).padStart(3, "0")}`;
+    sensorCounter += 1;
     const fakeData = {
-      sensorId: "Sensor-001",
+      sensorId: sensorId,
       usage: usageValue,
       timestamp: new Date(),
     };
@@ -73,7 +77,7 @@ io.on("connection", (socket) => {
     // Checking For THRESHOLD
     if (usageValue > systemState.alertThreshold) {
       const alertData = {
-        sensorId: "Sensor-001",
+        sensorId: sensorId,
         value: usageValue,
         threshold: systemState.alertThreshold,
         message: `CRITICAL LOAD: ${usageValue}kW detected!`,

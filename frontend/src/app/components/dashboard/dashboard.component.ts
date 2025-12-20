@@ -174,7 +174,9 @@ export class DashboardComponent implements OnInit {
     // Triggering Download via a hidden link
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Energy_Report_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `SynCity_Energy_Report_${new Date()
+      .toISOString()
+      .slice(0, 10)}.csv`;
     a.click();
 
     // Cleanup
