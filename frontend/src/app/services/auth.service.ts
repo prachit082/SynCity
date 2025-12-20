@@ -17,7 +17,9 @@ export class AuthService {
   constructor() {
     const savedRole = localStorage.getItem('user_role');
     const savedName = localStorage.getItem('user_name');
-    if (savedRole && savedName) {
+    const token = localStorage.getItem('access_token');
+
+    if (token && savedRole && savedName) {
       this.currentUser$.next({ role: savedRole, username: savedName });
     }
   }
