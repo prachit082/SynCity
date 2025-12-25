@@ -7,10 +7,11 @@ import { HttpClient } from '@angular/common/http';
 import { Alert } from '../../../interfaces/alert.model';
 import { AdminPanelComponent } from '../../components/admin-panel/admin-panel.component';
 import { AuthService } from '../../services/auth.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, BaseChartDirective, AdminPanelComponent],
+  imports: [CommonModule, BaseChartDirective, AdminPanelComponent, FormsModule],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
@@ -23,10 +24,11 @@ export class DashboardComponent implements OnInit {
   isSystemActive = true;
   //Admin Mode
   isAdminMode = false;
+  shiftNotes: any[] = [];
+  newMessage: string = '';
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   socket: any;
-  status = 'Disconnected';
   currentUsage = 0;
 
   // Chart Configuration
@@ -58,10 +60,6 @@ export class DashboardComponent implements OnInit {
 
     this.socket = io(`http://localhost:5000`);
 
-    this.socket.on('connect', () => {
-      this.status = 'Live Connection';
-    });
-
     this.socket.on('energy-update', (data: any) => {
       this.currentUsage = data.usage;
       this.updateChart(data);
@@ -86,9 +84,13 @@ export class DashboardComponent implements OnInit {
       }
     });
 
-    this.socket.on('system-status', (isActive: boolean) => {
-      this.isSystemActive = isActive;
-      this.status = isActive ? 'Live Connection' : 'System Paused';
+    this.socket.on('load-notes', (notes: any[]) => {
+      this.shiftNotes = notes;
+    });
+
+    this.socket.on('new-note', (note: any) => {
+      this.shiftNotes.push(note);
+      // Auto-scroll logic could go here
     });
   }
 
@@ -211,5 +213,19 @@ export class DashboardComponent implements OnInit {
       .subscribe({
         error: () => alert('Failed to update status'),
       });
+  }
+
+  postNote() {
+    if (!this.newMessage.trim()) return;
+
+    const currentUser = this.auth.currentUser$.value;
+
+    this.socket.emit('send-note', {
+      author: currentUser?.username || 'Unknown',
+      role: currentUser?.role || 'staff',
+      message: this.newMessage,
+    });
+
+    this.newMessage = '';
   }
 }

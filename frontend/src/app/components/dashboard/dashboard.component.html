@@ -2,7 +2,7 @@
   [class.bg-red-50]="isCritical"
   class="min-h-screen transition-colors duration-500 bg-slate-50 p-6"
 >
-  <div class="w-full h-full mx-auto space-y-4">
+  <div class="w-full h-full mx-auto space-y-4 mb-4">
     @if (isCritical) {
     <div
       class="bg-red-600 text-white p-4 rounded-xl shadow-lg animate-pulse flex items-center justify-between"
@@ -59,7 +59,7 @@
           <div
             class="text-xs text-green-500 font-semibold uppercase tracking-wider"
           >
-            ● {{ status }}
+            ● Live Connection
           </div>
         </div>
       </div>
@@ -168,6 +168,60 @@
           }
         </div>
       </div>
+    </div>
+  </div>
+
+  <div
+    class="bg-slate-800 text-white p-6 rounded-xl shadow-lg border border-slate-700 flex flex-col h-100"
+  >
+    <h3 class="font-bold text-yellow-400 mb-4 flex items-center gap-2">
+      📝 Shift Handover Log
+      <span class="text-xs text-slate-400 font-normal">(Shared Board)</span>
+    </h3>
+
+    <div class="flex-1 overflow-y-auto space-y-3 mb-4 pr-2 custom-scrollbar">
+      @for (note of shiftNotes; track note._id) {
+      <div
+        class="bg-slate-700 p-3 rounded-lg text-sm border-l-4"
+        [class.border-yellow-500]="note.role === 'staff'"
+        [class.border-blue-500]="note.role === 'admin'"
+      >
+        <div class="flex justify-between items-center mb-1">
+          <span
+            class="font-bold text-xs"
+            [class.text-yellow-400]="note.role === 'staff'"
+            [class.text-blue-300]="note.role === 'admin'"
+          >
+            {{ note.author }}
+          </span>
+          <span class="text-[10px] text-slate-400">
+            {{ note.timestamp | date : "shortTime" }}
+          </span>
+        </div>
+
+        <p class="text-slate-200">{{ note.message }}</p>
+      </div>
+      } @if (shiftNotes.length === 0) {
+      <div class="text-center text-slate-500 text-xs mt-10">
+        No notes yet. Start the conversation.
+      </div>
+      }
+    </div>
+
+    <div class="flex gap-2">
+      <input
+        [(ngModel)]="newMessage"
+        (keyup.enter)="postNote()"
+        placeholder="Type a message for next shift..."
+        class="flex-1 bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:border-yellow-500 outline-none"
+      />
+
+      <button
+        (click)="postNote()"
+        class="bg-yellow-600 hover:bg-yellow-500 text-white px-4 py-2 rounded text-sm font-bold transition"
+      >
+        POST
+      </button>
     </div>
   </div>
 </div>
