@@ -179,7 +179,7 @@
       <span class="text-xs text-slate-400 font-normal">(Shared Board)</span>
     </h3>
 
-    <div class="flex-1 overflow-y-auto space-y-3 mb-4 pr-2 custom-scrollbar">
+    <div #scrollContainer class="flex-1 overflow-y-auto space-y-3 mb-4 pr-2">
       @for (note of shiftNotes; track note._id) {
       <div
         class="bg-slate-700 p-3 rounded-lg text-sm border-l-4"

@@ -1,4 +1,10 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { io } from 'socket.io-client';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
@@ -27,6 +33,7 @@ export class DashboardComponent implements OnInit {
   shiftNotes: any[] = [];
   newMessage: string = '';
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
   socket: any;
   currentUsage = 0;
@@ -86,11 +93,14 @@ export class DashboardComponent implements OnInit {
 
     this.socket.on('load-notes', (notes: any[]) => {
       this.shiftNotes = notes;
+      this.scrollToBottom();
     });
 
     this.socket.on('new-note', (note: any) => {
       this.shiftNotes.push(note);
-      // Auto-scroll logic could go here
+      setTimeout(() => {
+        this.scrollToBottom();
+      }, 50);
     });
   }
 
@@ -100,6 +110,18 @@ export class DashboardComponent implements OnInit {
 
   logout() {
     this.auth.logout();
+  }
+
+  scrollToBottom(): void {
+    try {
+      const element = this.scrollContainer.nativeElement;
+      element.scrollTo({
+        top: element.scrollHeight,
+        behavior: 'smooth',
+      });
+
+      // element.scrollTop = element.scrollHeight;
+    } catch (err) {}
   }
 
   updateChart(data: any) {
