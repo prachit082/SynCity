@@ -75,7 +75,7 @@ export class DashboardComponent implements OnInit {
     this.socket.on('alert-incident', (alert: any) => {
       this.triggerVisualAlarm();
       this.alerts.unshift(alert);
-      if (this.alerts.length > 5) this.alerts.pop();
+      if (this.alerts.length > 10) this.alerts.pop();
     });
 
     this.socket.on('alert-updated', (updatedAlert: any) => {

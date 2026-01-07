@@ -85,10 +85,10 @@ io.on("connection", (socket) => {
       };
 
       // A. Saving to DB (Audit Trail)
-      await Alert.create(alertData);
+      const savedAlert = await Alert.create(alertData);
 
       // B. Triggering Special "Alert" Event
-      io.emit("alert-incident", alertData); // Broadcast to ALL connected admins
+      io.emit("alert-incident", savedAlert); // Broadcast to ALL connected admins
     }
 
     // 4. Sending Normal Data
@@ -118,7 +118,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    //clearInterval(interval);
+    clearInterval(interval);
     console.log("User disconnected");
   });
 });
