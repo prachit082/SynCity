@@ -54,7 +54,6 @@ io.on("connection", (socket) => {
   // 3. NEW: Handle Threshold Change
   socket.on("update-threshold", (newLimit) => {
     systemState.alertThreshold = parseInt(newLimit);
-    console.log(`Admin updated threshold to: ${systemState.alertThreshold}kW`);
     io.emit("system-state", systemState);
   });
 
@@ -119,7 +118,6 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     clearInterval(interval);
-    console.log("User disconnected");
   });
 });
 
