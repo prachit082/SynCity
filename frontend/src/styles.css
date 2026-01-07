@@ -5,3 +5,23 @@
   --color-primary: #1e40af;
   --font-family-sans: "Inter", sans-serif;
 }
+
+/* Custom Scrollbar Utility */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px; /* Width of the vertical scrollbar */
+  height: 6px; /* Height of the horizontal scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1); /* Transparent track */
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* Slate-300 color */
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* Slate-400 on hover */
+}

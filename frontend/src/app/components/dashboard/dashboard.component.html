@@ -112,7 +112,7 @@
           >
         </h3>
 
-        <div class="space-y-2 overflow-y-auto h-100">
+        <div class="space-y-2 overflow-y-auto h-100 custom-scrollbar">
           @for (alert of alerts; track $index) {
           <div
             [class.border-red-500]="alert.status === 'Open'"
@@ -179,7 +179,10 @@
       <span class="text-xs text-slate-400 font-normal">(Shared Board)</span>
     </h3>
 
-    <div #scrollContainer class="flex-1 overflow-y-auto space-y-3 mb-4 pr-2">
+    <div
+      #scrollContainer
+      class="flex-1 overflow-y-auto space-y-3 mb-4 pr-2 custom-scrollbar"
+    >
       @for (note of shiftNotes; track note._id) {
       <div
         class="bg-slate-700 p-3 rounded-lg text-sm border-l-4"

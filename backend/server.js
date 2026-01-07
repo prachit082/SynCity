@@ -60,40 +60,40 @@ io.on("connection", (socket) => {
 
   let sensorCounter = 1;
 
-  // const interval = setInterval(async () => {
-  //   // 3. ONLY Generating data if system is ACTIVE
-  //   if (!systemState.isActive) return;
-  //   const usageValue = Math.floor(Math.random() * 120) + 10;
-  //   const sensorId = `Sensor-${String(sensorCounter).padStart(3, "0")}`;
-  //   sensorCounter += 1;
-  //   const fakeData = {
-  //     sensorId: sensorId,
-  //     usage: usageValue,
-  //     timestamp: new Date(),
-  //   };
+  const interval = setInterval(async () => {
+    // 3. ONLY Generating data if system is ACTIVE
+    if (!systemState.isActive) return;
+    const usageValue = Math.floor(Math.random() * 120) + 10;
+    const sensorId = `Sensor-${String(sensorCounter).padStart(3, "0")}`;
+    sensorCounter += 1;
+    const fakeData = {
+      sensorId: sensorId,
+      usage: usageValue,
+      timestamp: new Date(),
+    };
 
-  //   // Saving Raw Data
-  //   await EnergyReading.create(fakeData);
+    // Saving Raw Data
+    await EnergyReading.create(fakeData);
 
-  //   // Checking For THRESHOLD
-  //   if (usageValue > systemState.alertThreshold) {
-  //     const alertData = {
-  //       sensorId: sensorId,
-  //       value: usageValue,
-  //       threshold: systemState.alertThreshold,
-  //       message: `CRITICAL LOAD: ${usageValue}kW detected!`,
-  //     };
+    // Checking For THRESHOLD
+    if (usageValue > systemState.alertThreshold) {
+      const alertData = {
+        sensorId: sensorId,
+        value: usageValue,
+        threshold: systemState.alertThreshold,
+        message: `CRITICAL LOAD: ${usageValue}kW detected!`,
+      };
 
-  //     // A. Saving to DB (Audit Trail)
-  //     await Alert.create(alertData);
+      // A. Saving to DB (Audit Trail)
+      await Alert.create(alertData);
 
-  //     // B. Triggering Special "Alert" Event
-  //     io.emit("alert-incident", alertData); // Broadcast to ALL connected admins
-  //   }
+      // B. Triggering Special "Alert" Event
+      io.emit("alert-incident", alertData); // Broadcast to ALL connected admins
+    }
 
-  //   // 4. Sending Normal Data
-  //   socket.emit("energy-update", fakeData);
-  // }, 10000);
+    // 4. Sending Normal Data
+    socket.emit("energy-update", fakeData);
+  }, 10000);
 
   // 1. Get last 20 notes when user connects
   Note.find()
