@@ -8,6 +8,8 @@ const UserSchema = new mongoose.Schema({
     enum: ["admin", "staff"],
     default: "staff",
   },
+  avatarSeed: { type: String, default: "default" },
+  theme: { type: String, enum: ["light", "dark"], default: "light" },
 });
 
 module.exports = mongoose.model("User", UserSchema);
