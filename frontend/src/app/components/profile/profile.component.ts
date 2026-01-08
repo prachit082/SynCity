@@ -18,7 +18,13 @@ export class ProfileComponent implements OnInit {
   http = inject(HttpClient);
   auth = inject(AuthService);
 
-  user!: UserProfile;
+  user: UserProfile = {
+    _id: '',
+    username: '',
+    role: 'staff',
+    theme: 'light',
+    avatarSeed: 'default',
+  };
 
   passwords: PasswordChangeForm = {
     current: '',
@@ -41,7 +47,6 @@ export class ProfileComponent implements OnInit {
   }
 
   loadProfile() {
-    // Adding <UserProfile> here tells TS that the response will match our interface
     this.http
       .get<UserProfile>('http://localhost:5000/api/user/profile', this.headers)
       .subscribe({

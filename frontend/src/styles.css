@@ -4,7 +4,10 @@
 @theme {
   --color-primary: #1e40af;
   --font-family-sans: "Inter", sans-serif;
+  --color-mode: class;
 }
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* Custom Scrollbar Utility */
 .custom-scrollbar::-webkit-scrollbar {

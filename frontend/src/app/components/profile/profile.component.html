@@ -5,7 +5,7 @@
     <div class="flex items-center gap-4 mb-8">
       <a
         href="/dashboard"
-        class="p-2 bg-white rounded-full shadow hover:bg-slate-100 dark:bg-slate-800 dark:text-white"
+        class="p-2 bg-white rounded-full shadow hover:bg-slate-100 dark:bg-slate-800 dark:text-white transition-colors cursor-pointer"
       >
         ⬅
       </a>
@@ -16,16 +16,16 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div
-        class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 text-center"
+        class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 text-center transition-colors"
       >
         <div class="relative inline-block">
           <img
             [src]="avatarUrl"
-            class="w-32 h-32 rounded-full bg-slate-100 mb-4 mx-auto border-4 border-blue-500"
+            class="w-32 h-32 rounded-full bg-slate-100 mb-4 mx-auto border-4 border-blue-500 shadow-sm"
           />
           <button
             (click)="randomizeAvatar()"
-            class="absolute bottom-4 right-0 bg-slate-800 text-white p-2 rounded-full text-xs shadow hover:bg-black cursor-pointer"
+            class="absolute bottom-4 right-0 bg-slate-800 text-white p-2 rounded-full text-xs shadow hover:bg-black cursor-pointer transition-colors"
             title="Randomize Look"
           >
             🎲
@@ -40,39 +40,41 @@
         >
           {{ user.role }}
         </span>
+        <button
+          (click)="saveSettings()"
+          class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition w-full cursor-pointer shadow-lg shadow-blue-500/30"
+        >
+          Save Preference
+        </button>
 
-        <div class="mt-6 border-t pt-6 dark:border-slate-600">
+        <div class="mt-6 border-t border-slate-200 pt-6 dark:border-slate-700">
           <label
             class="block text-sm font-semibold text-slate-500 mb-2 dark:text-slate-400"
             >Theme Preference</label
           >
+
           <div class="flex justify-center gap-4">
             <button
               (click)="user.theme = 'light'; saveSettings()"
               [class.ring-2]="user.theme === 'light'"
-              class="px-4 py-2 bg-slate-200 rounded text-slate-800 ring-blue-500 font-medium cursor-pointer"
+              class="px-4 py-2 bg-slate-100 text-slate-800 rounded-lg hover:bg-slate-200 ring-blue-500 font-medium cursor-pointer transition-all border border-slate-200"
             >
               ☀ Light
             </button>
+
             <button
               (click)="user.theme = 'dark'; saveSettings()"
               [class.ring-2]="user.theme === 'dark'"
-              class="px-4 py-2 bg-slate-800 rounded text-white ring-blue-500 font-medium cursor-pointer"
+              class="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 ring-blue-500 font-medium cursor-pointer transition-all border border-slate-600 dark:border-slate-500"
             >
               🌙 Dark
             </button>
           </div>
-          <button
-            (click)="saveSettings()"
-            class="mt-2 bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition w-full cursor-pointer"
-          >
-            Save
-          </button>
         </div>
       </div>
 
       <div
-        class="md:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700"
+        class="md:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors"
       >
         <h3 class="text-xl font-bold text-slate-800 mb-6 dark:text-white">
           Security Settings
@@ -87,7 +89,8 @@
             <input
               [(ngModel)]="passwords.current"
               type="password"
-              class="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-600 dark:text-white"
+              class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:bg-slate-900 dark:border-slate-600 dark:text-white dark:focus:border-blue-500"
+              placeholder="Enter current password"
             />
           </div>
 
@@ -99,7 +102,8 @@
             <input
               [(ngModel)]="passwords.new"
               type="password"
-              class="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-600 dark:text-white"
+              class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:bg-slate-900 dark:border-slate-600 dark:text-white dark:focus:border-blue-500"
+              placeholder="Enter new password"
             />
           </div>
 
@@ -111,24 +115,29 @@
             <input
               [(ngModel)]="passwords.confirm"
               type="password"
-              class="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-600 dark:text-white"
+              class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:bg-slate-900 dark:border-slate-600 dark:text-white dark:focus:border-blue-500"
+              placeholder="Confirm new password"
             />
           </div>
 
           @if (msg) {
-          <div class="text-green-600 bg-green-50 p-3 rounded text-sm">
-            {{ msg }}
+          <div
+            class="text-green-700 bg-green-50 border border-green-200 p-3 rounded-lg text-sm flex items-center gap-2"
+          >
+            ✅ {{ msg }}
           </div>
           } @if (errorMsg) {
-          <div class="text-red-600 bg-red-50 p-3 rounded text-sm">
-            {{ errorMsg }}
+          <div
+            class="text-red-700 bg-red-50 border border-red-200 p-3 rounded-lg text-sm flex items-center gap-2"
+          >
+            ⚠️ {{ errorMsg }}
           </div>
           }
 
           <div class="pt-4">
             <button
               (click)="changePassword()"
-              class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-700 transition w-full md:w-auto cursor-pointer"
+              class="bg-slate-800 dark:bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition w-full md:w-auto cursor-pointer shadow-lg"
             >
               Update Password
             </button>

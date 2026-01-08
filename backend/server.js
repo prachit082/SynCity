@@ -206,16 +206,16 @@ app.get("/api/reports/export", async (req, res) => {
 });
 
 // API Endpoint to Get Profile (To load settings on login)
-app.get('/api/user/profile', async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+app.get("/api/user/profile", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ error: "Unauthorized" });
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    const user = await User.findById(decoded.id).select('-password');
+    const user = await User.findById(decoded.id).select("-password");
     res.json(user);
   } catch (err) {
-    res.status(401).json({ error: 'Invalid Token' });
+    res.status(401).json({ error: "Invalid Token" });
   }
 });
 
@@ -245,26 +245,37 @@ app.put("/api/alerts/:id/resolve", async (req, res) => {
 });
 
 // API Endpoint to Update Settings (Theme & Avatar)
-app.put('/api/user/settings', async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
+app.put("/api/user/settings", async (req, res) => {
   try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "No token provided" });
     const decoded = jwt.verify(token, JWT_SECRET);
     const { theme, avatarSeed } = req.body;
-    
-    const user = await User.findByIdAndUpdate(decoded.id, { 
-      theme, 
-      avatarSeed 
-    }, { new: true });
-    
+
+    const user = await User.findByIdAndUpdate(
+      decoded.id,
+      {
+        theme,
+        avatarSeed,
+      },
+      { new: true }
+    );
+    if (!user) return res.status(404).json({ error: "User not found" });
     res.json(user);
   } catch (err) {
-    res.status(500).json({ error: 'Update failed' });
+    if (err.name === "TokenExpiredError") {
+      return res
+        .status(401)
+        .json({ error: "Session expired. Please login again." });
+    }
+    console.error("SETTINGS ERROR:", err);
+    res.status(500).json({ error: "Update failed" });
   }
 });
 
 // API Endpoint to Change Password
-app.put('/api/user/password', async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
+app.put("/api/user/password", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
   const { oldPassword, newPassword } = req.body;
 
   try {
@@ -273,16 +284,17 @@ app.put('/api/user/password', async (req, res) => {
 
     // Verify Old Password
     const validPass = await bcrypt.compare(oldPassword, user.password);
-    if (!validPass) return res.status(400).json({ error: 'Incorrect current password' });
+    if (!validPass)
+      return res.status(400).json({ error: "Incorrect current password" });
 
     // Hash New Password
     const hashedNew = await bcrypt.hash(newPassword, 10);
     user.password = hashedNew;
     await user.save();
 
-    res.json({ message: 'Password updated successfully' });
+    res.json({ message: "Password updated successfully" });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update password' });
+    res.status(500).json({ error: "Failed to update password" });
   }
 });
 
