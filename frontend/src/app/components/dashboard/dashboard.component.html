@@ -1,18 +1,18 @@
 <div
   [class.bg-red-50]="isCritical"
-  class="min-h-screen transition-colors duration-500 bg-slate-50 p-6"
+  class="min-h-screen transition-colors duration-500 bg-slate-50 dark:bg-slate-900 dark:text-slate-100 p-6"
 >
   <div class="w-full h-full mx-auto space-y-4 mb-4">
     @if (isCritical) {
     <div
-      class="bg-red-600 text-white p-4 rounded-xl shadow-lg animate-pulse flex items-center justify-between"
+      class="bg-red-600 dark:bg-red-700 text-white p-4 rounded-xl shadow-lg animate-pulse flex items-center justify-between"
     >
       <span class="font-bold flex items-center gap-2">
         ⚠️ CRITICAL GRID LOAD DETECTED
       </span>
       <button
         (click)="isCritical = false"
-        class="text-xs bg-red-800 px-2 py-1 rounded"
+        class="text-xs bg-red-800 px-2 py-1 rounded hover:bg-red-900 transition-colors"
       >
         DISMISS
       </button>
@@ -20,14 +20,18 @@
     }
 
     <div
-      class="flex flex-col md:flex-row justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-200"
+      class="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors"
     >
       <div
         class="flex w-full md:w-auto justify-between md:justify-start gap-4 items-center"
       >
         <div>
-          <h1 class="text-2xl font-bold text-slate-800">SynCity Energy Grid</h1>
-          <p class="text-slate-500 text-sm">Real-time Sensor Feed</p>
+          <h1 class="text-2xl font-bold text-slate-800 dark:text-white">
+            SynCity Energy Grid
+          </h1>
+          <p class="text-slate-500 dark:text-slate-400 text-sm">
+            Real-time Sensor Feed
+          </p>
         </div>
         @if (isAdmin) {
         <button
@@ -43,18 +47,18 @@
       </div>
 
       <div
-        class="flex w-full md:w-auto justify-between md:justify-end items-center gap-4 border-t md:border-t-0 border-slate-100 pt-4 md:pt-0"
+        class="flex w-full md:w-auto justify-between md:justify-end items-center gap-4 border-t md:border-t-0 border-slate-100 dark:border-slate-700 pt-4 md:pt-0"
       >
         <div class="flex gap-2">
           <a
             href="/profile"
-            class="flex items-center gap-2 cursor-pointer hover:bg-slate-100 p-2 rounded-lg transition dark:hover:bg-slate-800"
+            class="flex items-center gap-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 p-2 rounded-lg transition"
           >
             <div
-              class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden border border-slate-300"
+              class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-600 overflow-hidden border border-slate-300 dark:border-slate-500"
             >
               <svg
-                class="w-full h-full text-slate-400"
+                class="w-full h-full text-slate-400 dark:text-slate-300"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -67,9 +71,10 @@
               <div class="font-bold text-slate-600 dark:text-slate-200">
                 Profile
               </div>
-              <div class="text-slate-400">Settings</div>
+              <div class="text-slate-400 dark:text-slate-500">Settings</div>
             </div>
           </a>
+
           <button
             (click)="logout()"
             class="cursor-pointer text-xs font-bold px-3 py-1 rounded-full border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
@@ -77,15 +82,18 @@
             LOGOUT
           </button>
         </div>
+
         <div class="text-right">
           <div
             [class.text-red-600]="currentUsage > 100"
-            class="text-3xl font-mono font-bold text-blue-600 transition-colors"
+            [class.dark:text-red-400]="currentUsage > 100"
+            class="text-3xl font-mono font-bold text-blue-600 dark:text-blue-400 transition-colors"
           >
-            {{ currentUsage }} <span class="text-sm text-slate-400">kW</span>
+            {{ currentUsage }}
+            <span class="text-sm text-slate-400 dark:text-slate-500">kW</span>
           </div>
           <div
-            class="text-xs text-green-500 font-semibold uppercase tracking-wider"
+            class="text-xs text-green-500 dark:text-green-400 font-semibold uppercase tracking-wider"
           >
             ● Live Connection
           </div>
@@ -95,13 +103,15 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div
-        class="md:col-span-2 bg-white p-4 rounded-xl shadow-sm border border-slate-200"
+        class="md:col-span-2 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors"
       >
         <div class="flex justify-between items-center">
-          <h3 class="font-semibold text-slate-700 mb-4">Live Load Monitor</h3>
+          <h3 class="font-semibold text-slate-700 dark:text-slate-200 mb-4">
+            Live Load Monitor
+          </h3>
           <button
             (click)="downloadReport()"
-            class="cursor-pointer text-xs font-bold px-3 py-1 rounded-full border transition-colors flex gap-1"
+            class="cursor-pointer text-xs font-bold px-3 py-1 rounded-full border dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors flex gap-1 items-center"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -130,44 +140,51 @@
       </div>
 
       <div
-        class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 h-full"
+        class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 h-full transition-colors"
       >
-        <h3 class="font-semibold text-slate-700 mb-4 flex items-center gap-2">
+        <h3
+          class="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center gap-2"
+        >
           Recent Incidents
           <span
-            class="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-full"
+            class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs px-2 py-0.5 rounded-full"
             >{{ alerts.length }}</span
           >
         </h3>
 
         <div class="space-y-2 overflow-y-auto h-100 custom-scrollbar">
           @for (alert of alerts; track $index) {
+
           <div
-            [class.border-red-500]="alert.status === 'Open'"
-            [class.border-green-500]="alert.status === 'Resolved'"
-            [class.bg-red-50]="alert.status === 'Open'"
-            [class.bg-green-50]="alert.status === 'Resolved'"
+            [ngClass]="{
+              'border-red-500 bg-red-50 dark:bg-red-900/20':
+                alert.status === 'Open',
+              'border-green-500 bg-green-50 dark:bg-green-900/20':
+                alert.status === 'Resolved'
+            }"
             class="p-3 border-l-4 rounded text-sm transition-all duration-300"
           >
             <div class="flex justify-between items-start">
               <div>
                 <span
-                  [class.bg-red-200]="alert.status === 'Open'"
-                  [class.text-red-800]="alert.status === 'Open'"
-                  [class.bg-green-200]="alert.status === 'Resolved'"
-                  [class.text-green-800]="alert.status === 'Resolved'"
+                  [ngClass]="{
+                    'bg-red-200 text-red-800 dark:bg-red-900 dark:text-red-200':
+                      alert.status === 'Open',
+                    'bg-green-200 text-green-800 dark:bg-green-900 dark:text-green-200':
+                      alert.status === 'Resolved'
+                  }"
                   class="text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide"
                 >
                   {{ alert.status }}
                 </span>
 
-                <div class="font-bold text-slate-700 mt-1">
+                <div class="font-bold text-slate-700 dark:text-slate-200 mt-1">
                   Load Spike: {{ alert.value }}kW
                 </div>
               </div>
 
               <div class="text-right">
-                <div class="text-slate-400 text-xs">
+                <div class="text-slate-400 dark:text-slate-500 text-xs">
                   {{ alert.timestamp | date : "shortTime" }}
                 </div>
               </div>
@@ -175,7 +192,7 @@
 
             @if (alert.status === 'Resolved') {
             <div
-              class="mt-2 pt-2 border-t border-green-200 text-xs text-green-800"
+              class="mt-2 pt-2 border-t border-green-200 dark:border-green-800 text-xs text-green-800 dark:text-green-300"
             >
               <span class="font-bold">✓ Fixed by {{ alert.resolvedBy }}:</span>
               "{{ alert.resolutionNote }}"
@@ -183,14 +200,16 @@
             } @if (alert.status === 'Open') {
             <button
               (click)="resolveAlert(alert)"
-              class="cursor-pointer mt-2 w-full bg-white border border-red-200 text-red-600 text-xs font-bold py-1 rounded hover:bg-red-600 hover:text-white transition"
+              class="cursor-pointer mt-2 w-full bg-white dark:bg-slate-700 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-300 text-xs font-bold py-1 rounded hover:bg-red-600 hover:text-white transition"
             >
               MARK RESOLVED
             </button>
             }
           </div>
           } @if (alerts.length === 0) {
-          <div class="text-slate-400 text-sm italic py-4 text-center">
+          <div
+            class="text-slate-400 dark:text-slate-500 text-sm italic py-4 text-center"
+          >
             System Nominal. No Incidents.
           </div>
           }
@@ -200,9 +219,11 @@
   </div>
 
   <div
-    class="bg-slate-800 text-white p-6 rounded-xl shadow-lg border border-slate-700 flex flex-col h-100"
+    class="bg-white dark:bg-slate-800 text-slate-800 dark:text-white p-6 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 flex flex-col h-100 transition-colors"
   >
-    <h3 class="font-bold text-yellow-400 mb-4 flex items-center gap-2">
+    <h3
+      class="font-bold text-slate-700 dark:text-yellow-400 mb-4 flex items-center gap-2"
+    >
       📝 Shift Handover Log
       <span class="text-xs text-slate-400 font-normal">(Shared Board)</span>
     </h3>
@@ -213,15 +234,19 @@
     >
       @for (note of shiftNotes; track note._id) {
       <div
-        class="bg-slate-700 p-3 rounded-lg text-sm border-l-4"
+        class="p-3 rounded-lg text-sm border-l-4 transition-colors"
+        [class.bg-slate-50]="true"
+        [class.dark:bg-slate-700]="true"
         [class.border-yellow-500]="note.role === 'staff'"
         [class.border-blue-500]="note.role === 'admin'"
       >
         <div class="flex justify-between items-center mb-1">
           <span
             class="font-bold text-xs"
-            [class.text-yellow-400]="note.role === 'staff'"
-            [class.text-blue-300]="note.role === 'admin'"
+            [class.text-yellow-600]="note.role === 'staff'"
+            [class.dark:text-yellow-400]="note.role === 'staff'"
+            [class.text-blue-600]="note.role === 'admin'"
+            [class.dark:text-blue-300]="note.role === 'admin'"
           >
             {{ note.author }}
           </span>
@@ -230,10 +255,10 @@
           </span>
         </div>
 
-        <p class="text-slate-200">{{ note.message }}</p>
+        <p class="text-slate-700 dark:text-slate-200">{{ note.message }}</p>
       </div>
       } @if (shiftNotes.length === 0) {
-      <div class="text-center text-slate-500 text-xs mt-10">
+      <div class="text-center text-slate-400 dark:text-slate-500 text-xs mt-10">
         No notes yet. Start the conversation.
       </div>
       }
@@ -244,21 +269,22 @@
         [(ngModel)]="newMessage"
         (keyup.enter)="postNote()"
         placeholder="Type a message for next shift..."
-        class="flex-1 bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:border-yellow-500 outline-none"
+        class="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded px-3 py-2 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none placeholder:text-slate-400 transition-colors"
       />
 
       <button
         (click)="postNote()"
-        class="bg-yellow-600 hover:bg-yellow-500 text-white px-4 py-2 rounded text-sm font-bold transition"
+        class="bg-yellow-600 hover:bg-yellow-500 text-white px-4 py-2 rounded text-sm font-bold transition shadow-sm"
       >
         POST
       </button>
     </div>
   </div>
 </div>
-
 <footer>
-  <div class="text-center text-slate-600 text-xs py-4">
+  <div
+    class="text-center text-slate-600 bg-slate-200 dark:bg-slate-800 dark:text-slate-400 text-xs py-4 transition-colors"
+  >
     &copy; 2025 SynCity Energy Solutions. All rights reserved.
   </div>
 </footer>
@@ -267,11 +293,13 @@
 <div
   class="fixed inset-0 z-50 grid place-items-center bg-zinc-900/60 backdrop-blur-sm p-4 overflow-y-auto"
 >
-  <div class="bg-slate-50 relative p-2 pb-2 rounded-md min-w-80 h-fit">
+  <div
+    class="bg-slate-50 dark:bg-slate-800 relative p-2 pb-2 rounded-md min-w-80 h-fit shadow-xl"
+  >
     <svg
       (click)="isAdminMode = !isAdminMode"
       type="button"
-      class="absolute top-4 right-5 h-5 w-5 cursor-pointer text-black"
+      class="absolute top-4 right-5 h-5 w-5 cursor-pointer text-black dark:text-white"
       clip-rule="evenodd"
       fill-rule="evenodd"
       stroke-linejoin="round"
@@ -280,6 +308,7 @@
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
+        fill="currentColor"
         d="m12 10.93 5.719-5.72c.146-.146.339-.219.531-.219.404 0 .75.324.75.749 0 .193-.073.385-.219.532l-5.72 5.719 5.719 5.719c.147.147.22.339.22.531 0 .427-.349.75-.75.75-.192 0-.385-.073-.531-.219l-5.719-5.719-5.719 5.719c-.146.146-.339.219-.531.219-.401 0-.75-.323-.75-.75 0-.192.073-.384.22-.531l5.719-5.719-5.72-5.719c-.146-.147-.219-.339-.219-.532 0-.425.346-.749.75-.749.192 0 .385.073.531.219z"
       />
     </svg>

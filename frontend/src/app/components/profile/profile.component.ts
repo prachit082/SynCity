@@ -79,7 +79,14 @@ export class ProfileComponent implements OnInit {
           this.msg = 'Settings Saved!';
           setTimeout(() => (this.msg = ''), 3000);
         },
-        error: () => (this.errorMsg = 'Failed to save settings'),
+        error: (err) => {
+          if (err.status === 401) {
+            alert('Your session has expired. Please login again.');
+            this.auth.logout();
+          } else {
+            this.errorMsg = 'Failed to save settings';
+          }
+        },
       });
   }
 
@@ -114,6 +121,7 @@ export class ProfileComponent implements OnInit {
     } else {
       document.documentElement.classList.remove('dark');
     }
+    localStorage.setItem('theme', theme);
   }
 
   async randomizeAvatar() {
