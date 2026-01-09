@@ -50,12 +50,24 @@ io.on("connection", (socket) => {
   socket.on("toggle-system", (command) => {
     systemState.isActive = command === "START";
     io.emit("system-state", systemState); // Broadcast to everyone
+    logActivity(
+      decoded.username,
+      decoded.role,
+      "SYSTEM_TOGGLE",
+      `System changed to ${systemState.isActive ? "Active" : "Halted"}`
+    );
   });
 
   // 3. NEW: Handle Threshold Change
   socket.on("update-threshold", (newLimit) => {
     systemState.alertThreshold = parseInt(newLimit);
     io.emit("system-state", systemState);
+    logActivity(
+      decoded.username,
+      decoded.role,
+      "CONFIG_CHANGE",
+      `Threshold set to ${systemState.alertThreshold}kW`
+    );
   });
 
   let sensorCounter = 1;
@@ -131,6 +143,15 @@ mongoose
   .then(() => console.log("✅ MongoDB Atlas Connected Successfully!"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
+// HELPER: Record an Activity
+async function logActivity(user, role, action, details) {
+  try {
+    await ActivityLog.create({ user, role, action, details });
+  } catch (err) {
+    console.error("Logging Error:", err);
+  }
+}
+
 // --- AUTH ROUTE: REGISTER ---
 app.post("/api/auth/register", async (req, res) => {
   try {
@@ -162,6 +183,7 @@ app.post("/api/auth/login", async (req, res) => {
   // 2. Checking Password
   const validPass = await bcrypt.compare(password, user.password);
   if (!validPass) return res.status(400).json({ error: "Invalid password" });
+  logActivity(user.username, user.role, "LOGIN", "User logged in successfully");
 
   // 3. Generating Token
   const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, {
@@ -220,6 +242,24 @@ app.get("/api/user/profile", async (req, res) => {
   }
 });
 
+// API Endpoint to Get Activity Logs (Admin Only)
+app.get("/api/admin/logs", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.role !== "admin")
+      return res.status(403).json({ error: "Admin Only" });
+
+    // Fetching last 50 logs, with newest first
+    const logs = await ActivityLog.find().sort({ timestamp: -1 }).limit(50);
+    res.json(logs);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch logs" });
+  }
+});
+
 // API Endpoint to UPDATE ALERT STATUS (Staff Action)
 app.put("/api/alerts/:id/resolve", async (req, res) => {
   const { id } = req.params;
@@ -238,6 +278,12 @@ app.put("/api/alerts/:id/resolve", async (req, res) => {
     );
 
     io.emit("alert-updated", updatedAlert);
+    logActivity(
+      decoded.username,
+      decoded.role,
+      "ALERT_RESOLVE",
+      `Resolved Alert on ${updatedAlert.sensorId}`
+    );
 
     res.json(updatedAlert);
   } catch (err) {
