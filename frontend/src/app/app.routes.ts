@@ -3,6 +3,7 @@ import { LoginComponent } from './components/login/login.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { guestGuard, authGuard } from './guards/auth.guard';
 import { ProfileComponent } from './components/profile/profile.component';
+import { AuditLogsComponent } from './components/audit-logs/audit-logs.component';
 
 export const routes: Routes = [
   {
@@ -16,6 +17,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
+  {
+    path: 'audit-logs',
+    component: AuditLogsComponent,
+    canActivate: [authGuard],
+  },
   {
     path: '',
     redirectTo: 'login',
