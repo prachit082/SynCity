@@ -23,6 +23,7 @@ const EnergyReading = require("./models/EnergyReading");
 const Alert = require("./models/Alert");
 const User = require("./models/User");
 const Note = require("./models/Note");
+const ActivityLog = require("./models/ActivityLog");
 
 // Middleware
 app.use(express.json());
