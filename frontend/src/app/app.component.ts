@@ -1,14 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, NavbarComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
 export class AppComponent {
+  auth = inject(AuthService);
+
   ngOnInit() {
     const savedTheme = localStorage.getItem('theme');
 
@@ -21,5 +25,9 @@ export class AppComponent {
     } else {
       document.documentElement.classList.remove('dark');
     }
+  }
+
+  username() {
+    return this.auth.currentUser$.value?.username;
   }
 }
