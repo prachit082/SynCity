@@ -47,28 +47,28 @@ io.on("connection", (socket) => {
   socket.emit("system-state", systemState);
 
   // 2. Handle Master Switch
-  socket.on("toggle-system", (command) => {
-    systemState.isActive = command === "START";
-    io.emit("system-state", systemState); // Broadcast to everyone
-    logActivity(
-      decoded.username,
-      decoded.role,
-      "SYSTEM_TOGGLE",
-      `System changed to ${systemState.isActive ? "Active" : "Halted"}`
-    );
-  });
+  // socket.on("toggle-system", (command) => {
+  //   systemState.isActive = command === "START";
+  //   io.emit("system-state", systemState); // Broadcast to everyone
+  //   logActivity(
+  //     decoded.username,
+  //     decoded.role,
+  //     "SYSTEM_TOGGLE",
+  //     `System changed to ${systemState.isActive ? "Active" : "Halted"}`
+  //   );
+  // });
 
   // 3. NEW: Handle Threshold Change
-  socket.on("update-threshold", (newLimit) => {
-    systemState.alertThreshold = parseInt(newLimit);
-    io.emit("system-state", systemState);
-    logActivity(
-      decoded.username,
-      decoded.role,
-      "CONFIG_CHANGE",
-      `Threshold set to ${systemState.alertThreshold}kW`
-    );
-  });
+  // socket.on("update-threshold", (newLimit) => {
+  //   systemState.alertThreshold = parseInt(newLimit);
+  //   io.emit("system-state", systemState);
+  //   logActivity(
+  //     decoded.username,
+  //     decoded.role,
+  //     "CONFIG_CHANGE",
+  //     `Threshold set to ${systemState.alertThreshold}kW`
+  //   );
+  // });
 
   let sensorCounter = 1;
 
@@ -193,6 +193,59 @@ app.post("/api/auth/login", async (req, res) => {
   res.json({ token, role: user.role, username: user.username });
 });
 
+// API Endpoint to TOGGLE System State
+app.post("/api/admin/system/toggle", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.role !== "admin")
+      return res.status(403).json({ error: "Admin Only" });
+
+    systemState.isActive = !systemState.isActive;
+
+    io.emit("system-state", systemState);
+    logActivity(
+      decoded.role,
+      decoded.role,
+      "SYSTEM_TOGGLE",
+      `System changed to ${systemState.isActive ? "Active" : "Halted"}`
+    );
+
+    res.json(systemState);
+  } catch (err) {
+    res.status(500).json({ error: "Toggle failed" });
+  }
+});
+
+// API Endpoint to UPDATE ALERT THRESHOLD
+app.post("/api/admin/system/threshold", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.role !== "admin")
+      return res.status(403).json({ error: "Admin Only" });
+
+    const { newThreshold } = req.body;
+    systemState.alertThreshold = parseInt(newThreshold);
+
+    io.emit("system-state", systemState);
+    logActivity(
+      decoded.role,
+      decoded.role,
+      "CONFIG_CHANGE",
+      `Threshold set to ${systemState.alertThreshold}kW`
+    );
+
+    res.json(systemState);
+  } catch (err) {
+    res.status(500).json({ error: "Update failed" });
+  }
+});
+
 // API Endpoint to Get Historical Data
 app.get("/api/history", async (req, res) => {
   try {
@@ -260,26 +313,51 @@ app.get("/api/admin/logs", async (req, res) => {
   }
 });
 
+// API Endpoint to GET System State
+app.get("/api/admin/system", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.role !== "admin")
+      return res.status(403).json({ error: "Admin Only" });
+
+    res.json(systemState);
+  } catch (err) {
+    res.status(500).json({ error: "Fetch failed" });
+  }
+});
+
 // API Endpoint to UPDATE ALERT STATUS (Staff Action)
 app.put("/api/alerts/:id/resolve", async (req, res) => {
   const { id } = req.params;
-  const { status, note, user } = req.body;
+  const { status, note } = req.body; // 'user' comes from token now
 
   try {
+    // 1. Verify Token to get User Info for the Log
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, JWT_SECRET); // <--- DEFINING DECODED HERE
+    const username = await User.findById(decoded.id).select("username"); // Get real username
+
     const updatedAlert = await Alert.findByIdAndUpdate(
       id,
       {
         status: status,
         resolutionNote: note,
-        resolvedBy: user,
+        resolvedBy: username.username, // Use real username from DB
         resolvedAt: new Date(),
       },
       { new: true }
     );
 
     io.emit("alert-updated", updatedAlert);
+
+    // 2. Log Activity (Now safe because 'decoded' exists)
     logActivity(
-      decoded.username,
+      username.username,
       decoded.role,
       "ALERT_RESOLVE",
       `Resolved Alert on ${updatedAlert.sensorId}`
@@ -287,6 +365,7 @@ app.put("/api/alerts/:id/resolve", async (req, res) => {
 
     res.json(updatedAlert);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Update failed" });
   }
 });
