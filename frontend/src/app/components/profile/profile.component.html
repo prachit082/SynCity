@@ -1,15 +1,15 @@
 <div
   class="min-h-screen bg-slate-50 p-4 md:p-8 dark:bg-slate-900 transition-colors duration-300"
 >
-  <div class="max-w-4xl mx-auto">
-    <div class="flex items-center gap-4 mb-8">
+  <div class="w-full mx-auto">
+    <div class="flex items-center gap-4 mb-2">
       <a
         href="/dashboard"
         class="p-2 bg-white rounded-full shadow hover:bg-slate-100 dark:bg-slate-800 dark:text-white transition-colors cursor-pointer"
       >
         ⬅
       </a>
-      <h1 class="text-3xl font-bold text-slate-800 dark:text-white">
+      <h1 class="text-2xl font-bold text-slate-800 dark:text-white">
         My Profile
       </h1>
     </div>
@@ -70,6 +70,15 @@
               🌙 Dark
             </button>
           </div>
+        </div>
+
+        <div class="mt-6 border-t border-slate-200 pt-6 dark:border-slate-700">
+          <button
+            (click)="logout()"
+            class="cursor-pointer text-xs font-bold px-3 py-1 rounded-full border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+          >
+            LOGOUT
+          </button>
         </div>
       </div>
 

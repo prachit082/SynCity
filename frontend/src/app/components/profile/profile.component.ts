@@ -54,7 +54,14 @@ export class ProfileComponent implements OnInit {
           this.user = data;
           this.applyTheme(this.user.theme);
         },
-        error: () => (this.errorMsg = 'Failed to load profile'),
+        error: (err) => {
+          if (err.status === 401) {
+            alert('Your session has expired. Please login again.');
+            this.auth.logout();
+          } else {
+            this.errorMsg = 'Failed to load profile';
+          }
+        },
       });
   }
 
@@ -126,5 +133,9 @@ export class ProfileComponent implements OnInit {
 
   async randomizeAvatar() {
     this.user.avatarSeed = Math.random().toString(36).substring(7);
+  }
+
+  logout() {
+    this.auth.logout();
   }
 }

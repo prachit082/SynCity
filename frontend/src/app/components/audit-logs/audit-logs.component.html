@@ -2,13 +2,21 @@
   class="min-h-screen bg-slate-50 dark:bg-slate-900 p-6 transition-colors duration-300"
 >
   <div class="w-full mx-auto">
-    <div class="flex justify-between items-end mb-8">
+    <div class="flex justify-between items-end mb-2">
       <div>
-        <h1
-          class="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-3"
-        >
-          📂 System Audit Logs
-        </h1>
+        <div class="flex gap-4 items-center">
+          <a
+            href="/dashboard"
+            class="p-2 bg-white rounded-full shadow hover:bg-slate-100 dark:bg-slate-800 dark:text-white transition-colors cursor-pointer"
+          >
+            ⬅
+          </a>
+          <h1
+            class="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-3"
+          >
+            📂 System Logs
+          </h1>
+        </div>
         <p class="text-slate-500 dark:text-slate-400 mt-2">
           Track sensitive actions and security events. (Read-Only)
         </p>
@@ -28,29 +36,31 @@
       @if (loading) {
       <div class="p-8 text-center text-slate-500">Loading records...</div>
       } @else {
-      <div class="overflow-x-auto">
+      <div class="overflow-auto h-125">
         <table class="w-full text-sm text-left">
           <thead
             class="text-xs text-slate-500 uppercase bg-slate-100 dark:bg-slate-900/50 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700"
           >
             <tr>
-              <th class="px-6 py-4">Timestamp</th>
-              <th class="px-6 py-4">User Identity</th>
-              <th class="px-6 py-4">Action Type</th>
-              <th class="px-6 py-4">Description</th>
+              <th class="px-4 py-2">Timestamp</th>
+              <th class="px-4 py-2">User Identity</th>
+              <th class="px-4 py-2">Action Type</th>
+              <th class="px-4 py-2">Description</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+          <tbody
+            class="divide-y divide-slate-100 dark:divide-slate-700 overflow-auto"
+          >
             @for (log of logs; track $index) {
             <tr
               class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
             >
               <td
-                class="px-6 py-4 whitespace-nowrap text-slate-500 dark:text-slate-400 font-mono text-xs"
+                class="px-4 py-2 whitespace-nowrap text-slate-500 dark:text-slate-400 font-mono text-xs"
               >
                 {{ log.timestamp | date : "medium" }}
               </td>
-              <td class="px-6 py-4">
+              <td class="px-4 py-2">
                 <div class="flex items-center gap-3">
                   <div
                     class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-300"
@@ -73,7 +83,7 @@
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4">
+              <td class="px-4 py-2">
                 <span
                   [class.bg-blue-100]="log.action === 'LOGIN'"
                   [class.text-blue-700]="log.action === 'LOGIN'"
@@ -88,7 +98,7 @@
                   {{ log.action }}
                 </span>
               </td>
-              <td class="px-6 py-4 text-slate-600 dark:text-slate-300">
+              <td class="px-4 py-2 text-slate-600 dark:text-slate-300">
                 {{ log.details }}
               </td>
             </tr>
