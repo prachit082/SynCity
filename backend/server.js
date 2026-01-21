@@ -46,30 +46,6 @@ io.on("connection", (socket) => {
   /// 1. Sending FULL State on connection
   socket.emit("system-state", systemState);
 
-  // 2. Handle Master Switch
-  // socket.on("toggle-system", (command) => {
-  //   systemState.isActive = command === "START";
-  //   io.emit("system-state", systemState); // Broadcast to everyone
-  //   logActivity(
-  //     decoded.username,
-  //     decoded.role,
-  //     "SYSTEM_TOGGLE",
-  //     `System changed to ${systemState.isActive ? "Active" : "Halted"}`
-  //   );
-  // });
-
-  // 3. NEW: Handle Threshold Change
-  // socket.on("update-threshold", (newLimit) => {
-  //   systemState.alertThreshold = parseInt(newLimit);
-  //   io.emit("system-state", systemState);
-  //   logActivity(
-  //     decoded.username,
-  //     decoded.role,
-  //     "CONFIG_CHANGE",
-  //     `Threshold set to ${systemState.alertThreshold}kW`
-  //   );
-  // });
-
   let sensorCounter = 1;
 
   const interval = setInterval(async () => {
@@ -187,7 +163,7 @@ app.post("/api/auth/login", async (req, res) => {
 
   // 3. Generating Token
   const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "2h",
   });
 
   res.json({ token, role: user.role, username: user.username });

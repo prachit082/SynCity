@@ -32,6 +32,7 @@ export class DashboardComponent implements OnInit {
   isAdminMode = false;
   shiftNotes: any[] = [];
   newMessage: string = '';
+  errorMsg: string = '';
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
@@ -156,16 +157,31 @@ export class DashboardComponent implements OnInit {
 
         this.chart?.update();
       },
-      error: (err) => console.error('Failed to load history', err),
+      error: (err) => {
+        if (err.status === 401) {
+          alert('Your session has expired. Please login again.');
+          this.auth.logout();
+        } else {
+          this.errorMsg = 'Failed to load history';
+        }
+      },
     });
   }
 
   fetchRecentAlerts() {
-    this.http
-      .get<any[]>('http://localhost:5000/api/alerts')
-      .subscribe((data) => {
+    this.http.get<any[]>('http://localhost:5000/api/alerts').subscribe({
+      next: (data) => {
         this.alerts = data;
-      });
+      },
+      error: (err) => {
+        if (err.status === 401) {
+          alert('Your session has expired. Please login again.');
+          this.auth.logout();
+        } else {
+          this.errorMsg = 'Failed to load alerts';
+        }
+      },
+    });
   }
 
   triggerVisualAlarm() {
