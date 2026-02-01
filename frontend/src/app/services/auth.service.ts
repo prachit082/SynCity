@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -26,8 +27,8 @@ export class AuthService {
 
   login(credentials: any) {
     return this.http.post<any>(
-      'http://localhost:5000/api/auth/login',
-      credentials
+      `${environment.apiUrl}/api/auth/login`,
+      credentials,
     );
   }
 

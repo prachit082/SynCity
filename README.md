@@ -83,7 +83,6 @@ Set Up Environment Variables:
 ->Create a new file named `.env` in the backend folder and add the following content:
 
 ```env
-NODE_ENV='development'
 PORT=5000
 MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=your_secret_jwt_key

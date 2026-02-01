@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { io } from 'socket.io-client';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../../environments/environment.prod';
 
 @Component({
   selector: 'app-admin-panel',
@@ -17,7 +18,7 @@ export class AdminPanelComponent implements OnInit {
   http = inject(HttpClient);
 
   ngOnInit() {
-    this.socket = io('http://localhost:5000');
+    this.socket = io(environment.apiUrl);
 
     // Listen for state updates
     this.socket.on('system-state', (state: any) => {
@@ -37,7 +38,7 @@ export class AdminPanelComponent implements OnInit {
 
   fetchSystemState() {
     this.http
-      .get('http://localhost:5000/api/admin/system', this.headers)
+      .get(`${environment.apiUrl}/api/admin/system`, this.headers)
       .subscribe((data: any) => {
         this.systemState = data;
         this.newThreshold = data.alertThreshold;
@@ -46,7 +47,7 @@ export class AdminPanelComponent implements OnInit {
 
   toggleSystem() {
     this.http
-      .post('http://localhost:5000/api/admin/system/toggle', {}, this.headers)
+      .post(`${environment.apiUrl}/api/admin/system/toggle`, {}, this.headers)
       .subscribe((data: any) => {
         this.systemState = data;
       });
@@ -55,9 +56,9 @@ export class AdminPanelComponent implements OnInit {
   updateThreshold() {
     this.http
       .post(
-        'http://localhost:5000/api/admin/system/threshold',
+        `${environment.apiUrl}/api/admin/system/threshold`,
         { newThreshold: this.newThreshold },
-        this.headers
+        this.headers,
       )
       .subscribe((data: any) => {
         this.systemState = data;

@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment.prod';
 
 @Component({
   selector: 'app-audit-logs',
@@ -29,7 +30,7 @@ export class AuditLogsComponent implements OnInit {
 
   fetchLogs() {
     this.http
-      .get('http://localhost:5000/api/admin/logs', this.headers)
+      .get(`${environment.apiUrl}/api/admin/logs`, this.headers)
       .subscribe({
         next: (data: any) => {
           this.logs = data;

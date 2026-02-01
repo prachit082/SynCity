@@ -7,6 +7,7 @@ import {
   PasswordChangeForm,
   UserProfile,
 } from '../../../interfaces/user-profile.model';
+import { environment } from '../../../environments/environment.prod';
 
 @Component({
   selector: 'app-profile',
@@ -48,7 +49,7 @@ export class ProfileComponent implements OnInit {
 
   loadProfile() {
     this.http
-      .get<UserProfile>('http://localhost:5000/api/user/profile', this.headers)
+      .get<UserProfile>(`${environment.apiUrl}/api/user/profile`, this.headers)
       .subscribe({
         next: (data) => {
           this.user = data;
@@ -72,12 +73,12 @@ export class ProfileComponent implements OnInit {
   saveSettings() {
     this.http
       .put<UserProfile>(
-        'http://localhost:5000/api/user/settings',
+        `${environment.apiUrl}/api/user/settings`,
         {
           theme: this.user.theme,
           avatarSeed: this.user.avatarSeed,
         },
-        this.headers
+        this.headers,
       )
       .subscribe({
         next: (updatedUser) => {
@@ -105,12 +106,12 @@ export class ProfileComponent implements OnInit {
 
     this.http
       .put(
-        'http://localhost:5000/api/user/password',
+        `${environment.apiUrl}/api/user/password`,
         {
           oldPassword: this.passwords.current,
           newPassword: this.passwords.new,
         },
-        this.headers
+        this.headers,
       )
       .subscribe({
         next: () => {

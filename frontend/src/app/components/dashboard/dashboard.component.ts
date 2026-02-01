@@ -14,6 +14,8 @@ import { Alert } from '../../../interfaces/alert.model';
 import { AdminPanelComponent } from '../../components/admin-panel/admin-panel.component';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
+import { env } from 'node:process';
+import { environment } from '../../../environments/environment.prod';
 
 @Component({
   selector: 'app-dashboard',
@@ -66,7 +68,7 @@ export class DashboardComponent implements OnInit {
     this.fetchHistory();
     this.fetchRecentAlerts();
 
-    this.socket = io(`http://localhost:5000`);
+    this.socket = io(environment.apiUrl);
 
     this.socket.on('energy-update', (data: any) => {
       this.currentUsage = data.usage;
@@ -83,7 +85,7 @@ export class DashboardComponent implements OnInit {
       const index = this.alerts.findIndex(
         (a) =>
           a.sensorId === updatedAlert.sensorId &&
-          a.timestamp === updatedAlert.timestamp
+          a.timestamp === updatedAlert.timestamp,
       );
       if (index !== -1) {
         this.alerts[index] = updatedAlert;
@@ -142,7 +144,7 @@ export class DashboardComponent implements OnInit {
   }
 
   fetchHistory() {
-    this.http.get<any[]>(`http://localhost:5000/api/history`).subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/api/history`).subscribe({
       next: (data) => {
         // Clearing existing default data if any
         this.lineChartData.labels = [];
@@ -169,7 +171,7 @@ export class DashboardComponent implements OnInit {
   }
 
   fetchRecentAlerts() {
-    this.http.get<any[]>('http://localhost:5000/api/alerts').subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/api/alerts`).subscribe({
       next: (data) => {
         this.alerts = data;
       },
@@ -196,7 +198,7 @@ export class DashboardComponent implements OnInit {
   }
 
   downloadReport() {
-    this.http.get<any[]>('http://localhost:5000/api/reports/export').subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/api/reports/export`).subscribe({
       next: (data) => {
         this.generateCSV(data);
       },
@@ -243,7 +245,7 @@ export class DashboardComponent implements OnInit {
     const currentUser = this.auth.currentUser$.value?.username || 'Staff';
 
     this.http
-      .put(`http://localhost:5000/api/alerts/${alertModel._id}/resolve`, {
+      .put(`${environment.apiUrl}/api/alerts/${alertModel._id}/resolve`, {
         status: 'Resolved',
         note: note,
         user: currentUser,
