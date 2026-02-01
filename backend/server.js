@@ -132,7 +132,9 @@ async function logActivity(user, role, action, details) {
     console.error("Logging Error:", err);
   }
 }
-
+app.get("/", (req, res) => {
+  res.send("SynCity Backend is Running! 🚀");
+});
 // --- AUTH ROUTE: REGISTER ---
 app.post("/api/auth/register", async (req, res) => {
   try {
