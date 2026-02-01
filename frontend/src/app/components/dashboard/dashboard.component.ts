@@ -14,7 +14,6 @@ import { Alert } from '../../../interfaces/alert.model';
 import { AdminPanelComponent } from '../../components/admin-panel/admin-panel.component';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
-import { env } from 'node:process';
 import { environment } from '../../../environments/environment.prod';
 
 @Component({
