@@ -25,17 +25,22 @@ const User = require("./models/User");
 const Note = require("./models/Note");
 const ActivityLog = require("./models/ActivityLog");
 
+const allowedOrigins = [
+  "http://localhost:4200",
+  "https://syn-city.vercel.app", // (Example URL, we will update this later)
+];
+
 // Middleware
 app.use(express.json());
 // Allow Angular
-app.use(cors({ origin: "http://localhost:4200" }));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(helmet());
 app.use(morgan("common"));
 
 // Socket.io Setup
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:4200",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
   },
 });
@@ -186,7 +191,7 @@ app.post("/api/admin/system/toggle", async (req, res) => {
       decoded.role,
       decoded.role,
       "SYSTEM_TOGGLE",
-      `System changed to ${systemState.isActive ? "Active" : "Halted"}`
+      `System changed to ${systemState.isActive ? "Active" : "Halted"}`,
     );
 
     res.json(systemState);
@@ -213,7 +218,7 @@ app.post("/api/admin/system/threshold", async (req, res) => {
       decoded.role,
       decoded.role,
       "CONFIG_CHANGE",
-      `Threshold set to ${systemState.alertThreshold}kW`
+      `Threshold set to ${systemState.alertThreshold}kW`,
     );
 
     res.json(systemState);
@@ -326,7 +331,7 @@ app.put("/api/alerts/:id/resolve", async (req, res) => {
         resolvedBy: username.username, // Use real username from DB
         resolvedAt: new Date(),
       },
-      { new: true }
+      { new: true },
     );
 
     io.emit("alert-updated", updatedAlert);
@@ -336,7 +341,7 @@ app.put("/api/alerts/:id/resolve", async (req, res) => {
       username.username,
       decoded.role,
       "ALERT_RESOLVE",
-      `Resolved Alert on ${updatedAlert.sensorId}`
+      `Resolved Alert on ${updatedAlert.sensorId}`,
     );
 
     res.json(updatedAlert);
@@ -360,7 +365,7 @@ app.put("/api/user/settings", async (req, res) => {
         theme,
         avatarSeed,
       },
-      { new: true }
+      { new: true },
     );
     if (!user) return res.status(404).json({ error: "User not found" });
     res.json(user);
